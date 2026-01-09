@@ -11,113 +11,75 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="年齡計算器">
     
-    <!-- 加入 PWA Manifest 讓手機識別為 APP -->
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogInNpbXBsZSBBZ2UgQ2FscyIsCiAgInNob3J0X25hbWUiOiAi5bm06b2h6KiI566X5ZmoIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjN2MzYWVkIgp9">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogInNpbXBsZSBBZ2UgQ2FscyIsCiAgInNob3J0X25hbWUiOiAi5bm06b2h6KiI566X5ZmoIiwKICAic3RhcnRfdXJsIjogIi4vIiwKICAic2NvcGUiOiAiLi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjN2MzYWVkIgp9">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --safe-area-inset-top: env(safe-area-inset-top);
-        }
+        :root { --safe-area-inset-top: env(safe-area-inset-top); }
         body {
             background-color: #f8fafc;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
-            /* 避免手機長按選取文字 */
             -webkit-user-select: none;
             user-select: none;
+            overflow: hidden;
+            height: 100%;
         }
-        .app-container {
-            padding-top: calc(1rem + var(--safe-area-inset-top));
-        }
+        .app-container { padding-top: calc(1rem + var(--safe-area-inset-top)); }
         .glass-card {
             background: #ffffff;
             border-radius: 30px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         }
-        .btn-option {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid #f1f5f9;
-        }
-        .btn-active {
-            border-color: #7c3aed;
-            background-color: #f5f3ff;
-            color: #7c3aed;
-            transform: scale(0.96);
-        }
-        .input-focus:focus {
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
-        }
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .animate-results {
-            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        /* 針對 PWA 模式隱藏不必要的滾動 */
-        html, body {
-            overflow: hidden;
-            height: 100%;
-        }
+        .btn-option { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid #f1f5f9; }
+        .btn-active { border-color: #7c3aed; background-color: #f5f3ff; color: #7c3aed; transform: scale(0.96); }
+        .input-focus:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1); }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+        .animate-results { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     </style>
 </head>
 <body class="flex items-start justify-center min-h-screen">
 
     <div class="w-full max-w-md app-container p-6">
         <div class="glass-card p-8">
-            <!-- 頂部資訊 -->
             <div class="text-center mb-10">
-                <span class="inline-block px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-xs font-bold mb-3 uppercase tracking-widest">Age Tracker</span>
+                <span class="inline-block px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-xs font-bold mb-3 uppercase tracking-widest">Offline Ready</span>
                 <h1 class="text-3xl font-black text-gray-900 mb-2">年齡計算器</h1>
                 <p id="current-date" class="text-sm text-gray-400 font-medium"></p>
             </div>
 
-            <!-- 表單內容 -->
             <div class="space-y-8">
-                <!-- 年份輸入 -->
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">出生年份</label>
-                    <input type="number" id="birth-year" 
-                        placeholder="例如: 1995" 
-                        oninput="autoCalculate()"
+                    <input type="number" id="birth-year" placeholder="例如: 1995" oninput="autoCalculate()"
                         class="w-full px-5 py-4 rounded-2xl border-2 border-gray-100 outline-none text-xl font-bold text-gray-700 transition-all input-focus"
                         inputmode="numeric">
                 </div>
 
-                <!-- 是否過生日 -->
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">今年過咗生日未？</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <button onclick="handleSelection(true)" id="btn-yes" 
-                            class="btn-option py-5 px-4 rounded-2xl text-gray-500 font-bold text-lg bg-gray-50">
-                            是 (已過)
-                        </button>
-                        <button onclick="handleSelection(false)" id="btn-no" 
-                            class="btn-option py-5 px-4 rounded-2xl text-gray-500 font-bold text-lg bg-gray-50">
-                            否 (未過)
-                        </button>
+                        <button onclick="handleSelection(true)" id="btn-yes" class="btn-option py-5 px-4 rounded-2xl text-gray-500 font-bold text-lg bg-gray-50">是 (已過)</button>
+                        <button onclick="handleSelection(false)" id="btn-no" class="btn-option py-5 px-4 rounded-2xl text-gray-500 font-bold text-lg bg-gray-50">否 (未過)</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 結果顯示區 -->
             <div id="result-container" class="hidden mt-12 p-8 bg-purple-600 rounded-3xl text-center shadow-xl shadow-purple-200 animate-results">
                 <p class="text-purple-200 font-bold text-xs mb-2 tracking-widest uppercase">你的年齡是</p>
                 <div id="age-display" class="text-6xl font-black text-white mb-2"></div>
-                <div class="h-1 w-12 bg-purple-400 mx-auto rounded-full opacity-50"></div>
                 <p id="birth-year-confirm" class="text-purple-200 text-xs mt-3 font-medium"></p>
             </div>
             
-            <p class="text-center text-gray-300 text-[10px] mt-10">© 2026 簡易年齡計算器 v2.1</p>
+            <p class="text-center text-gray-300 text-[10px] mt-10">© 2026 穩定離線版 v3.0</p>
         </div>
     </div>
 
     <script>
+        // --- 核心計算邏輯 ---
         let hasHadBirthday = null;
-
         window.onload = () => {
             const now = new Date();
             const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
@@ -126,58 +88,54 @@
 
         function handleSelection(status) {
             hasHadBirthday = status;
-            const btnYes = document.getElementById('btn-yes');
-            const btnNo = document.getElementById('btn-no');
-            
-            if (status) {
-                btnYes.classList.add('btn-active');
-                btnNo.classList.remove('btn-active');
-                btnNo.classList.add('bg-gray-50');
-            } else {
-                btnNo.classList.add('btn-active');
-                btnYes.classList.remove('btn-active');
-                btnYes.classList.add('bg-gray-50');
-            }
+            document.getElementById('btn-yes').className = status ? 'btn-option py-5 px-4 rounded-2xl font-bold text-lg btn-active' : 'btn-option py-5 px-4 rounded-2xl text-gray-500 font-bold text-lg bg-gray-50';
+            document.getElementById('btn-no').className = !status ? 'btn-option py-5 px-4 rounded-2xl font-bold text-lg btn-active' : 'btn-option py-5 px-4 rounded-2xl text-gray-500 font-bold text-lg bg-gray-50';
             calculateAge();
         }
 
-        function autoCalculate() {
-            if (hasHadBirthday !== null) calculateAge();
-        }
+        function autoCalculate() { if (hasHadBirthday !== null) calculateAge(); }
 
         function calculateAge() {
             const birthYearInput = document.getElementById('birth-year').value;
             const resultContainer = document.getElementById('result-container');
-            const ageDisplay = document.getElementById('age-display');
-            const birthYearConfirm = document.getElementById('birth-year-confirm');
-
-            if (!birthYearInput || birthYearInput.length < 4) {
-                resultContainer.classList.add('hidden');
-                return;
-            }
-
+            if (!birthYearInput || birthYearInput.length < 4) { resultContainer.classList.add('hidden'); return; }
             const currentYear = new Date().getFullYear();
             const birthYear = parseInt(birthYearInput);
-
-            if (birthYear > currentYear) {
-                ageDisplay.innerText = "？";
-                birthYearConfirm.innerText = "年份不可超越今年";
-                resultContainer.classList.remove('hidden');
-                return;
+            if (birthYear > currentYear) { 
+                document.getElementById('age-display').innerText = "？"; 
+                document.getElementById('birth-year-confirm').innerText = "年份錯誤";
+                resultContainer.classList.remove('hidden'); return; 
             }
-
             let age = currentYear - birthYear;
             if (hasHadBirthday === false) age -= 1;
-            if (age < 0) age = 0;
-
-            ageDisplay.innerText = `${age}`;
-            birthYearConfirm.innerText = `${birthYear} 年出生`;
+            document.getElementById('age-display').innerText = age < 0 ? 0 : age;
+            document.getElementById('birth-year-confirm').innerText = `${birthYear} 年出生`;
             resultContainer.classList.remove('hidden');
-            
-            // 手機震動反饋
             if (window.navigator.vibrate) window.navigator.vibrate(50);
+        }
+
+        // --- 離線核心：Service Worker 註冊 ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swContent = `
+                    const CACHE_NAME = 'age-calc-v3';
+                    const ASSETS = [
+                        './',
+                        './index.html',
+                        'https://cdn.tailwindcss.com'
+                    ];
+                    self.addEventListener('install', (e) => {
+                        e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+                    });
+                `;
+                const blob = new Blob([swContent], { type: 'text/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW failed', err));
+            });
         }
     </script>
 </body>
-
 </html>
